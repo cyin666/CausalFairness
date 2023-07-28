@@ -68,15 +68,4 @@ def ci_crf(data, X, Z, W, Y, x0, x1, rep, nboot = 100,crf_n_estimators = 100, cr
         ctfse = msd_three(crf_te,"id0",-y,"id1",y,"id0","ctfse",boots)
         expse_x0 = inh_str(tv, "expse_x0", setna=True)
         expse_x1 = inh_str(tv, "expse_x1", setna=True)
-
-    if len(W ==0):
-        nde = inh_str(te,"nde")
-        ctfde = inh_str(ett,"ctfde")
-        ctfie = inh_str(ett,"ctfie",set0=True)
-        nie = inh_str(te,"nie",set0=True)
-    else:
-        col_tmp = np.concatenate()
-        crf_tmp = CausalForest(n_estimators = crf_n_estimators, criterion = crf_criterion, min_samples_leaf = crf_min_samples_leaf, max_features = crf_max_features, honest = crf_honest  )
-        crf_tmp.fit(X = boot_data[Z].values, T = np.where(boot_data[X].values==x0,0,1), y = y.values)
-        crf_te = crf_tmp.oob_predict(X =  boot_data[Z].values).ravel()
         
