@@ -104,4 +104,33 @@ def inh_str(x,meas,set0=False,setna=False):
         x['value'] = np.nan
     
     return x
-  
+
+def auto_dummy(data, col):
+    """
+    Automatically change the categorical variables in the "col" columns of data into dummies
+    
+    :data:(dataframe) the entire dataset
+    :col:(array) the columns to be screened and adjusted
+    :return:(dataframe, array) the adjusted dataframe, and the adjusted column names of "col"
+    """
+    data_adj = data.copy()
+    
+    data_adj_col = data_adj[data_adj.columns[np.isin(data_adj.columns, col)]]
+    data_adj_other = data_adj[data_adj.columns[~np.isin(data_adj.columns, col)]]
+        
+    col_cat = data_adj_col.dtypes.index[np.isin(data_adj_col.dtypes, np.array(["object","string","category"]))].values
+    col_other = col[~(np.isin(col, col_cat))]
+    
+    data_adj_col_cat = data_adj_col[col_cat]
+
+    data_adj_col_other = data_adj_col[col_other]
+    
+    data_adj_col_cat = pd.get_dummies(data = data_adj_col_cat,columns = col_cat)
+    col_cat_adj = data_adj_col_cat.columns.values
+    col_adj = np.concatenate([col_cat_adj,col_other])
+    
+    data_adj_col = pd.concat([data_adj_col_cat,data_adj_col_other],axis=1)
+    data_adj = pd.concat([data_adj_col,data_adj_other],axis=1)    
+    
+    return data_adj, col_adj 
+    
