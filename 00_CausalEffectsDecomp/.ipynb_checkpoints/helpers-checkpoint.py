@@ -111,7 +111,8 @@ def auto_dummy(data, col):
     
     :data:(dataframe) the entire dataset
     :col:(array) the columns to be screened and adjusted
-    :return:(dataframe, array) the adjusted dataframe, and the adjusted column names of "col"
+    :return1:(dataframe) the adjusted dataframe
+    :return2:(array) the adjusted column names of "col"
     """
     data_adj = data.copy()
     
