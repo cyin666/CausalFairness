@@ -69,7 +69,7 @@ def ci_crf(data, X, Z, W, Y, x0, x1, rep, nboot = 100,crf_n_estimators = 100, cr
         expse_x0 = inh_str(tv, "expse_x0", setna=True)
         expse_x1 = inh_str(tv, "expse_x1", setna=True)
 
-    if len(W ==0):
+    if len(W)==0:
         nde = inh_str(te,"nde")
         ctfde = inh_str(ett,"ctfde")
         ctfie = inh_str(ett,"ctfie",set0=True)
@@ -77,12 +77,13 @@ def ci_crf(data, X, Z, W, Y, x0, x1, rep, nboot = 100,crf_n_estimators = 100, cr
     else:
         crf_tmp = CausalForest(n_estimators = crf_n_estimators, criterion = crf_criterion, min_samples_leaf = crf_min_samples_leaf, max_features = crf_max_features, honest = crf_honest  )
         crf_tmp.fit(X = boot_data[np.concatenate([Z,W])].values, T = np.where(boot_data[X].values==x0,0,1), y = y.values)
-        crf_med = crf_tmp.oob_predict(Xtrain =  boot_data[Z].values).ravel()
+        crf_med = crf_tmp.oob_predict(Xtrain = boot_data[np.concatenate([Z,W])].values).ravel()
         
         nde = msd_one(crf_med,"all","nde",boots)
         ctfde = msd_one(crf_med,"id0","ctfde",boots)
-        nie = msd_two(crf_med,"all",-crf_te,"id0","ctfie",boots)
-
+        nie = msd_two(crf_med,"all",-crf_te,"id0","nie",boots)
+        ctfie = msd_two(crf_med,"id0",-crf_te,"id0","ctfie",boots)
+        
     res = pd.concat([tv,te,expse_x1,expse_x0,ett,ctfse,nde,nie,ctfde,ctfie])
     res['rep'] = rep
     

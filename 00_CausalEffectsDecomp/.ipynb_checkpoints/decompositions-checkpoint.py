@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 def fairness_cookbook(data, X, Z, W, Y, x0, x1, method = "causal_forest", nboot1 = 1, nboot2 = 100, crf_n_estimators = 100, crf_criterion = "mse", crf_min_samples_leaf = 5, crf_max_features = "sqrt", crf_honest = True):
-     """
+    """
     Main function to decompose the causal effects.
     
     :data:(dataframe)
@@ -24,11 +24,9 @@ def fairness_cookbook(data, X, Z, W, Y, x0, x1, method = "causal_forest", nboot1
     :crf_min_samples_leaf:(integer) The minimum number of samples required to be at a leaf node. 
     :crf_max_features:(int, float, {“auto”, “sqrt”, “log2”}, or None, default 'sqrt' to keep consistency with R grf library) – The number of features to consider when looking for the best split.
     :crf_honest:(logical) Whether each tree should be trained in an honest manner, i.e. the training set is split into two equal sized subsets, the train and the val set. All samples in train are used to create the split structure and all samples in val are used to calculate the value of each node in the tree.
-    
     :return1:(dataframe) This df inclused all types of causal effects. value=calculated measure, boot=row number/bootstrap id, measure=meas (name of the calculated measure)
     :return2:(dataframe) Aggregated summary of return1.
     """
-    
     
     Z = None if ((len(Z)==0) | (Z is "")) else Z
     W = None if ((len(W)==0) | (W is "")) else W
