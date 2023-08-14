@@ -4,7 +4,7 @@ import numpy as np
 from econml.grf import CausalForest
 
 #removed tune_params for now compared to the original version. Unlike the GRF library in R, the python's corresponding EconML's causal forest does not allow auto-tuning. I added several other parameters here for manual tuning.
-def ci_crf(data, X, Z, W, Y, x0, x1, rep, nboot = 100,crf_n_estimators = 100, crf_criterion = "mse", crf_min_samples_leaf = 5, crf_max_features = "sqrt", crf_honest = True):
+def ci_crf(data, X, Z, W, Y, x0, x1, rep, nboot = 100,crf_n_estimators = 100, crf_criterion = "het", crf_min_samples_leaf = 5, crf_max_features = "sqrt", crf_honest = True):
     """
     Use causal random forest to decompose the causal effects.
     
@@ -81,7 +81,7 @@ def ci_crf(data, X, Z, W, Y, x0, x1, rep, nboot = 100,crf_n_estimators = 100, cr
         
         nde = msd_one(crf_med,"all","nde",boots)
         ctfde = msd_one(crf_med,"id0","ctfde",boots)
-        nie = msd_two(crf_med,"all",-crf_te,"id0","nie",boots)
+        nie = msd_two(crf_med,"all",-crf_te,"all","nie",boots)
         ctfie = msd_two(crf_med,"id0",-crf_te,"id0","ctfie",boots)
         
     res = pd.concat([tv,te,expse_x1,expse_x0,ett,ctfse,nde,nie,ctfde,ctfie])

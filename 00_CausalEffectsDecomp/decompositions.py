@@ -3,7 +3,7 @@ from helpers import auto_dummy
 import pandas as pd
 import numpy as np
 
-def fairness_cookbook(data, X, Z, W, Y, x0, x1, method = "causal_forest", nboot1 = 1, nboot2 = 100, crf_n_estimators = 100, crf_criterion = "mse", crf_min_samples_leaf = 5, crf_max_features = "sqrt", crf_honest = True):
+def fairness_cookbook(data, X, Z, W, Y, x0, x1, method = "causal_forest", nboot1 = 1, nboot2 = 100, crf_n_estimators = 100, crf_criterion = "het", crf_min_samples_leaf = 5, crf_max_features = "sqrt", crf_honest = True):
     """
     Main function to decompose the causal effects.
     
