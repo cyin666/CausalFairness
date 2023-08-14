@@ -4,7 +4,16 @@ import numpy as np
 from econml.grf import CausalForest
 
 #removed tune_params for now compared to the original version. Unlike the GRF library in R, the python's corresponding EconML's causal forest does not allow auto-tuning. I added several other parameters here for manual tuning.
-def ci_crf(data, X, Z, W, Y, x0, x1, rep, nboot = 100,crf_n_estimators = 100, crf_criterion = "het", crf_min_samples_leaf = 5, crf_max_features = "sqrt", crf_honest = True):
+def ci_crf(data, X, Z, W, Y, x0, x1, rep, nboot = 100,
+           crf_n_estimators = 2000, 
+           crf_criterion = "het", 
+           crf_min_samples_leaf = 5, 
+           crf_max_features = "sqrt", 
+           crf_honest = True,
+           crf_max_samples = 0.5,
+           crf_min_samples_split=2, 
+           crf_min_balancedness_tol=0.45, 
+           crf_inference=False):
     """
     Use causal random forest to decompose the causal effects.
     
@@ -18,12 +27,17 @@ def ci_crf(data, X, Z, W, Y, x0, x1, rep, nboot = 100,crf_n_estimators = 100, cr
     :rep:(integer) scalar index input from the outter bootstrap loop
     :nboot:(integer) scalar determining the number of inner bootstrap repetitions, that is, how many bootstrap samples are taken after the potential outcomes are obtained from the estimation procedure. 
     
-    see EconML documentaion for details of the parameters below
+    see EconML documentaion for details of the parameters below. The default are set to try to match the setting in the grf::causal_forest in R, though there still exists many difference between the two versions.
+    
     :crf_n_estimators:(integer) Number of trees.
     :crf_criterion:(string) "mse" or "het". The function to measure the quality of a split. Supported criteria are “mse” for the mean squared error in a linear moment estimation tree and “het” for heterogeneity score.
     :crf_min_samples_leaf:(integer) The minimum number of samples required to be at a leaf node. 
     :crf_max_features:(int, float, {“auto”, “sqrt”, “log2”}, or None, default 'sqrt' to keep consistency with R grf library) – The number of features to consider when looking for the best split.
     :crf_honest:(logical) Whether each tree should be trained in an honest manner, i.e. the training set is split into two equal sized subsets, the train and the val set. All samples in train are used to create the split structure and all samples in val are used to calculate the value of each node in the tree.
+    :crf_max_samples:(int or float in (0, 1], default .45,) – The number of samples to use for each subsample that is used to train each tree
+    :crf_min_samples_split:(int or float, default 10) – The minimum number of samples required to split an internal node
+    :crf_min_balancedness_tol:(float in [0, .5], default .45) – How imbalanced a split we can tolerate. This enforces that each split leaves at least (.5 - min_balancedness_tol) fraction of samples on each side of the split
+    :crf_inference:(True or False) whether inference (i.e. confidence interval construction and uncertainty quantification of the estimates) should be enabled.
     
     :return:(dataframe) This df inclused all types of causal effects. value=calculated measure, boot=row number/bootstrap id, measure=meas (name of the calculated measure)
     """
@@ -59,7 +73,7 @@ def ci_crf(data, X, Z, W, Y, x0, x1, rep, nboot = 100,crf_n_estimators = 100, cr
         ctfse = inh_str(tv,"ctfse",set0=True)
         crf_te = np.array([tv['value'][0]]*data.shape[0])
     else:
-        crf_tmp = CausalForest(n_estimators = crf_n_estimators, criterion = crf_criterion, min_samples_leaf = crf_min_samples_leaf, max_features = crf_max_features, honest = crf_honest  )
+        crf_tmp = CausalForest(n_estimators = crf_n_estimators, criterion = crf_criterion, min_samples_leaf = crf_min_samples_leaf, max_features = crf_max_features, honest = crf_honest, max_samples = crf_max_samples, min_samples_split = crf_min_samples_split, min_balancedness_tol = crf_min_balancedness_tol, inference = crf_inference  )
         crf_tmp.fit(X = boot_data[Z].values, T = np.where(boot_data[X].values==x0,0,1), y = y.values)
         crf_te = crf_tmp.oob_predict(Xtrain =  boot_data[Z].values).ravel()
         
@@ -75,7 +89,7 @@ def ci_crf(data, X, Z, W, Y, x0, x1, rep, nboot = 100,crf_n_estimators = 100, cr
         ctfie = inh_str(ett,"ctfie",set0=True)
         nie = inh_str(te,"nie",set0=True)
     else:
-        crf_tmp = CausalForest(n_estimators = crf_n_estimators, criterion = crf_criterion, min_samples_leaf = crf_min_samples_leaf, max_features = crf_max_features, honest = crf_honest  )
+        crf_tmp = CausalForest(n_estimators = crf_n_estimators, criterion = crf_criterion, min_samples_leaf = crf_min_samples_leaf, max_features = crf_max_features, honest = crf_honest, max_samples = crf_max_samples, min_samples_split = crf_min_samples_split, min_balancedness_tol = crf_min_balancedness_tol, inference = crf_inference  )
         crf_tmp.fit(X = boot_data[np.concatenate([Z,W])].values, T = np.where(boot_data[X].values==x0,0,1), y = y.values)
         crf_med = crf_tmp.oob_predict(Xtrain = boot_data[np.concatenate([Z,W])].values).ravel()
         
