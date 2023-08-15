@@ -3,7 +3,7 @@ from helpers import auto_dummy
 import pandas as pd
 import numpy as np
 
-def fairness_cookbook(data, X, Z, W, Y, x0, x1, method = "causal_forest", nboot1 = 1, nboot2 = 100, 
+def fairness_cookbook(data, X, Z, W, Y, x0, x1, method = "causal_forest", nboot1 = 1, nboot2 = 100, if_auto_dummy=True,
                       crf_n_estimators = 100, 
                       crf_criterion = "het", 
                       crf_min_samples_leaf = 5, 
@@ -26,6 +26,7 @@ def fairness_cookbook(data, X, Z, W, Y, x0, x1, method = "causal_forest", nboot1
     :method:("causal_forest" for causal forest from EconML.grf  or "medDML" for mediation analysis with double-machine learning) Only support "causal_forest" for now. 
     :nboot1:(integer) scalar determining the number of outter bootstrap repetitions, that is, how many times the fitting procedure is repeated. 
     :nboot2:(integer) scalar determining the number of inner bootstrap repetitions, that is, how many bootstrap samples are taken after the potential outcomes are obtained from the estimation procedure. 
+    :if_auto_dummy:(True/False) If automatically transform categorical variables into dummies. Default True.
         
     **see EconML documentaion for details of the parameters below. The default are set to try to match the setting in the grf::causal_forest in R, though there still exists many difference between the two versions.
     
@@ -47,13 +48,14 @@ def fairness_cookbook(data, X, Z, W, Y, x0, x1, method = "causal_forest", nboot1
     Z = None if ((len(Z)==0) | (Z is "")) else Z
     W = None if ((len(W)==0) | (W is "")) else W
     
-    Z_dtypes = np.isin(data[Z].dtypes, np.array(["object","string","category"]))
-    W_dtypes = np.isin(data[W].dtypes, np.array(["object","string","category"]))
-    
-    if Z_dtypes.sum() > 0:
-        data, Z = auto_dummy(data = data, col = Z)
-    if W_dtypes.sum() > 0:
-        data, W = auto_dummy(data = data, col = W)
+    if if_auto_dummy:
+        Z_dtypes = np.isin(data[Z].dtypes, np.array(["object","string","category"]))
+        W_dtypes = np.isin(data[W].dtypes, np.array(["object","string","category"]))
+
+        if Z_dtypes.sum() > 0:
+            data, Z = auto_dummy(data = data, col = Z)
+        if W_dtypes.sum() > 0:
+            data, W = auto_dummy(data = data, col = W)
     
     idx = (data[X] == x1)
     
