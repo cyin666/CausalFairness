@@ -7,7 +7,7 @@ def fairness_cookbook(data, X, Z, W, Y, x0, x1, method = "causal_forest", nboot1
                       crf_n_estimators = 100, 
                       crf_criterion = "het", 
                       crf_min_samples_leaf = 5, 
-                      crf_max_features = "sqrt", 
+                      crf_max_features = "sqrt",  
                       crf_honest = True,
                       crf_max_samples = 0.5,
                       crf_min_samples_split=2, 
@@ -30,7 +30,7 @@ def fairness_cookbook(data, X, Z, W, Y, x0, x1, method = "causal_forest", nboot1
         
     **see EconML documentaion for details of the parameters below. The default are set to try to match the setting in the grf::causal_forest in R, though there still exists many difference between the two versions.
     
-    :crf_n_estimators:(integer) Number of trees.
+    :crf_n_estimators:(integer) Number of trees
     :crf_criterion:(string) "mse" or "het". The function to measure the quality of a split. Supported criteria are “mse” for the mean squared error in a linear moment estimation tree and “het” for heterogeneity score.
     :crf_min_samples_leaf:(integer) The minimum number of samples required to be at a leaf node. 
     :crf_max_features:(int, float, {“auto”, “sqrt”, “log2”}, or None, default 'sqrt' to keep consistency with R grf library) – The number of features to consider when looking for the best split.
@@ -80,4 +80,4 @@ def fairness_cookbook(data, X, Z, W, Y, x0, x1, method = "causal_forest", nboot1
             res = pd.concat([res,res_tmp])
 
     res_summary = res.groupby("measure").agg({'value':['mean','std']})
-    return res, res_summary
+    return res, res_summary 

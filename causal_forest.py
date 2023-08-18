@@ -7,7 +7,7 @@ from econml.grf import CausalForest
 def ci_crf(data, X, Z, W, Y, x0, x1, rep, nboot = 100,
            crf_n_estimators = 2000, 
            crf_criterion = "het", 
-           crf_min_samples_leaf = 5, 
+           crf_min_samples_leaf = 5,  
            crf_max_features = "sqrt", 
            crf_honest = True,
            crf_max_samples = 0.5,
@@ -32,7 +32,7 @@ def ci_crf(data, X, Z, W, Y, x0, x1, rep, nboot = 100,
     :crf_n_estimators:(integer) Number of trees.
     :crf_criterion:(string) "mse" or "het". The function to measure the quality of a split. Supported criteria are “mse” for the mean squared error in a linear moment estimation tree and “het” for heterogeneity score.
     :crf_min_samples_leaf:(integer) The minimum number of samples required to be at a leaf node. 
-    :crf_max_features:(int, float, {“auto”, “sqrt”, “log2”}, or None, default 'sqrt' to keep consistency with R grf library) – The number of features to consider when looking for the best split.
+    :crf_max_features:(int, float, {“auto”, “sqrt”, “log2”}, or None, default 'sqrt' to keep consistency with R grf library) – The number of features to consider when looking for the best split
     :crf_honest:(logical) Whether each tree should be trained in an honest manner, i.e. the training set is split into two equal sized subsets, the train and the val set. All samples in train are used to create the split structure and all samples in val are used to calculate the value of each node in the tree.
     :crf_max_samples:(int or float in (0, 1], default .45,) – The number of samples to use for each subsample that is used to train each tree
     :crf_min_samples_split:(int or float, default 10) – The minimum number of samples required to split an internal node
